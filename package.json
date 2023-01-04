@@ -1,11 +1,12 @@
 {
-  "name": "threejs-vue-test",
+  "name": "hermes",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "start": "node ./bin/www"
   },
   "dependencies": {
     "core-js": "^3.8.3",
