@@ -40,7 +40,7 @@ export default {
       this.initSky();
 
       this.animate();
-      this.updateGui();
+      // this.updateGui();
       this.updateSun();
     });
   },

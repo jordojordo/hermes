@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1
 FROM node:latest as build-stage
 WORKDIR /app
 COPY package*.json ./
