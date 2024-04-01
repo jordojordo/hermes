@@ -1,14 +1,9 @@
-<script>
-import ThreeCanvas from './components/ThreeCanvas.vue'
-
-export default {
-  name: 'App',
-  components: {
-    ThreeCanvas
-  }
-}
+<script setup lang="ts">
+import { RouterView } from 'vue-router';
 </script>
 
 <template>
-  <ThreeCanvas />
+  <div id="main">
+    <RouterView />
+  </div>
 </template>

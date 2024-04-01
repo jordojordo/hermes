@@ -1,8 +1,6 @@
 <script>
 import * as THREE from "three";
 
-// import Stats from "three/addons/libs/stats.module.js";
-
 import { GUI } from "three/addons/libs/lil-gui.module.min.js";
 import { Water } from "three/addons/objects/Water.js";
 import { Sky } from "three/addons/objects/Sky.js";
@@ -10,6 +8,14 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 export default {
+  data() {
+    const cameraPosition = { x: 0, y: 0, z: 0 };
+
+    return {
+      cameraPosition,
+    };
+  },
+
   created() {
     this.loader = new GLTFLoader();
 
@@ -40,8 +46,10 @@ export default {
       this.initSky();
 
       this.animate();
-      // this.updateGui();
       this.updateSun();
+
+      // Use for debugging
+      // this.updateGui();
     });
   },
 
@@ -53,7 +61,17 @@ export default {
       requestAnimationFrame(this.animate);
 
       this.renderer.render(this.scene, this.camera);
-      this.controls.update();
+      this.controls.update(0.01);
+
+      if (this.camera) {
+        const { x, y, z } = this.camera.position;
+
+        this.cameraPosition = {
+          x: x.toFixed(2),
+          y: y.toFixed(2),
+          z: z.toFixed(2),
+        };
+      }
     },
 
     initControls() {
@@ -61,11 +79,17 @@ export default {
         55,
         window.innerWidth / window.innerHeight,
         1,
-        20000
+        20000,
       );
       this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+      this.controls.movementSpeed = 1000;
+      this.controls.rollSpeed = Math.PI / 6;
+      this.controls.autoForward = false;
+      this.controls.dragToLook = true;
 
-      this.camera.position.set(194, 218, 166);
+      // this.camera.position.set(194, 168, 500);
+      // "x": "205.13", "y": "215.46", "z": "167.14
+      this.camera.position.set(206.72, 204.12, 169.52);
       this.scene.add(this.camera);
     },
 
@@ -100,7 +124,7 @@ export default {
           "./assets/textures/waternormals.jpg",
           function (texture) {
             texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-          }
+          },
         ),
         sunDirection: new THREE.Vector3(),
         sunColor: 0xffffff,
@@ -158,5 +182,9 @@ export default {
 </script>
 
 <template>
-  <div ref="canvas"></div>
+  <div ref="canvas">
+    <!-- <template v-if="cameraPosition">
+      <div style="position: absolute">{{ cameraPosition }}</div>
+    </template> -->
+  </div>
 </template>
