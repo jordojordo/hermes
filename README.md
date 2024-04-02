@@ -4,4 +4,4 @@
 
 A [Three.js](https://threejs.org/) playground to test rendering within a [Vue.js](https://vuejs.org/guide/introduction.html) app.
 
-See it in action at [hermes.yokanga.xyz].
+See it in action at [hermes.yokanga.xyz](https://hermes.yokanga.xyz).
