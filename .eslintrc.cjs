@@ -1,8 +1,8 @@
 /* eslint-env node */
-require('@rushstack/eslint-patch/modern-module-resolution')
+require('@rushstack/eslint-patch/modern-module-resolution');
 
 module.exports = {
-  root: true,
+  root:      true,
   'extends': [
     'plugin:vue/vue3-essential',
     'eslint:recommended',
@@ -19,10 +19,8 @@ module.exports = {
       ]
     }
   ],
-  parserOptions: {
-    ecmaVersion: 'latest'
-  },
-  'rules': {
+  parserOptions: { ecmaVersion: 'latest' },
+  'rules':       {
     'dot-notation':                   'off',
     'guard-for-in':                   'off',
     'new-cap':                        'off',
@@ -154,4 +152,4 @@ module.exports = {
       }
     ]
   }
-}
+};
