@@ -61,24 +61,26 @@ let loadingProgress = ref(0);
 
 // Setup the LoadingManager
 const manager = new THREE.LoadingManager();
-manager.onStart = function (url, itemsLoaded, itemsTotal) {
-  console.log('Started loading:', url, `. Loaded ${itemsLoaded} of ${itemsTotal}.`);
+
+manager.onStart = function(url, itemsLoaded, itemsTotal) {
+  console.log('Started loading:', url, `. Loaded ${ itemsLoaded } of ${ itemsTotal }.`);
 };
 
-manager.onProgress = function (url, itemsLoaded, itemsTotal) {
+manager.onProgress = function(url, itemsLoaded, itemsTotal) {
   // Calculate the progress as a percentage
   const progress = (itemsLoaded / itemsTotal) * 100;
+
   loadingProgress.value = progress;
-  console.log(`Loading progress: ${progress}%`);
+  console.log(`Loading progress: ${ progress }%`);
 };
 
-manager.onLoad = function () {
+manager.onLoad = function() {
   console.log('All assets loaded.');
   isLoading.value = false; // Set isLoading to false once all assets are loaded
 };
 
-manager.onError = function (url) {
-  console.error('There was an error loading ' + url);
+manager.onError = function(url) {
+  console.error(`There was an error loading ${  url }`);
 };
 
 const loader: GLTFLoader = new GLTFLoader(manager);
@@ -95,19 +97,19 @@ onMounted(() => {
     const dirLight = initDirLight(scene);
 
     const parameters: GUIParameters = {
-      elevation: 22.5,
-      azimuth:   113.5,
-      turbidity: 10,
-      rayleigh: 2,
-      mieCoefficient: 0.005,
-      mieDirectionalG: 0.8,
-      waterColor: '#001e0f',
-      sunIntensity: 1,
-      dirLightColor: '#ffffff',
-      dirLightIntensity: 5,
-      dirLightPositionX: 294,
-      dirLightPositionY: 302,
-      dirLightPositionZ: -255,
+      elevation:          22.5,
+      azimuth:            113.5,
+      turbidity:          10,
+      rayleigh:           2,
+      mieCoefficient:     0.005,
+      mieDirectionalG:    0.8,
+      waterColor:         '#001e0f',
+      sunIntensity:       1,
+      dirLightColor:      '#ffffff',
+      dirLightIntensity:  5,
+      dirLightPositionX:  294,
+      dirLightPositionY:  302,
+      dirLightPositionZ:  -255,
       showDirLightHelper: false,
       showCameraPosition: false
     };
@@ -132,6 +134,7 @@ onMounted(() => {
     updateEnvironment();
 
     const gui = updateGui();
+
     gui.close();
 
     isLoading.value = false;
@@ -163,8 +166,8 @@ function initRenderer(): THREE.WebGLRenderer {
 }
 
 function initControls(
-  scene: THREE.Scene, 
-  renderer: THREE.WebGLRenderer, 
+  scene: THREE.Scene,
+  renderer: THREE.WebGLRenderer,
   camera: THREE.PerspectiveCamera
 ): OrbitControls {
   const controls = new OrbitControls(camera, renderer?.domElement as HTMLElement);
@@ -293,12 +296,14 @@ function updateGui(): GUI {
 
   // Camera Folder
   const cameraFolder = gui.addFolder('Camera');
+
   cameraFolder.add(parameters, 'showCameraPosition').onChange(() => {
     cameraPositionVisible.value = parameters.showCameraPosition;
   });
 
   // Sky Folder
   const skyFolder = gui.addFolder('Sky');
+
   skyFolder.add(parameters, 'turbidity', 1, 20).onChange(updateEnvironment);
   skyFolder.add(parameters, 'rayleigh', 0, 4, 0.001).onChange(updateEnvironment);
   skyFolder.add(parameters, 'mieCoefficient', 0.001, 0.1, 0.001).onChange(updateEnvironment);
@@ -306,17 +311,20 @@ function updateGui(): GUI {
 
   // Sun Folder
   const sunFolder = gui.addFolder('Sun');
+
   sunFolder.add(parameters, 'elevation', 0, 90, 0.1).onChange(updateEnvironment);
   sunFolder.add(parameters, 'azimuth', -180, 180, 0.1).onChange(updateEnvironment);
   sunFolder.add(parameters, 'sunIntensity', 0, 2, 0.1).onChange(updateEnvironment);
 
   // Water Folder
   const waterFolder = gui.addFolder('Water');
+
   waterFolder.addColor(parameters, 'waterColor').onChange(updateEnvironment);
   waterFolder.add(water.material.uniforms.distortionScale, 'value', 0, 8, 0.1).name('distortionScale');
 
   // Directional Light Folder
   const dirLightFolder = gui.addFolder('Directional Light');
+
   dirLightFolder.addColor(parameters, 'dirLightColor').onChange(updateEnvironment);
   dirLightFolder.add(parameters, 'dirLightIntensity', 0, 10, 0.1).onChange(updateEnvironment);
   dirLightFolder.add(parameters, 'dirLightPositionX', -500, 500).onChange(updateEnvironment);
@@ -335,6 +343,7 @@ function updateEnvironment(): void {
   // Update sun position based on elevation and azimuth
   const phi = THREE.MathUtils.degToRad(90 - parameters.elevation);
   const theta = THREE.MathUtils.degToRad(parameters.azimuth);
+
   sun.setFromSphericalCoords(1, phi, theta);
 
   // Update sky properties
@@ -347,6 +356,7 @@ function updateEnvironment(): void {
   // Update water color
   // Convert color from GUI (hex string) to numerical format expected by Three.js
   const waterColor = new THREE.Color(parameters.waterColor);
+
   water.material.uniforms['waterColor'].value = waterColor;
 
   // Update sun intensity (affects how bright the sun is)
@@ -355,6 +365,7 @@ function updateEnvironment(): void {
 
   // Update directional light properties
   const dirLightColor = new THREE.Color(parameters.dirLightColor);
+
   dirLight.color.set(dirLightColor);
   dirLight.intensity = parameters.dirLightIntensity;
   dirLight.position.set(parameters.dirLightPositionX, parameters.dirLightPositionY, parameters.dirLightPositionZ);
