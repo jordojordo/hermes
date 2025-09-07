@@ -15,36 +15,36 @@ interface CameraPos {
 };
 
 interface GUIParameters {
-  elevation: number;
-  azimuth: number;
-  turbidity: number;
-  rayleigh: number;
-  mieCoefficient: number;
-  mieDirectionalG: number;
-  waterColor: string;
-  sunIntensity: number;
-  dirLightColor: string;
-  dirLightIntensity: number;
-  dirLightPositionX: number;
-  dirLightPositionY: number;
-  dirLightPositionZ: number;
+  elevation:          number;
+  azimuth:            number;
+  turbidity:          number;
+  rayleigh:           number;
+  mieCoefficient:     number;
+  mieDirectionalG:    number;
+  waterColor:         string;
+  sunIntensity:       number;
+  dirLightColor:      string;
+  dirLightIntensity:  number;
+  dirLightPositionX:  number;
+  dirLightPositionY:  number;
+  dirLightPositionZ:  number;
   showDirLightHelper: boolean;
   showCameraPosition: boolean;
 }
 
 interface ThreeCanvas {
-  scene: THREE.Scene;
-  renderer: THREE.WebGLRenderer;
-  camera: THREE.PerspectiveCamera;
-  controls: OrbitControls;
-  sun: THREE.Vector3;
-  water: Water;
-  sky: Sky;
-  dirLight: THREE.DirectionalLight;
+  scene:      THREE.Scene;
+  renderer:   THREE.WebGLRenderer;
+  camera:     THREE.PerspectiveCamera;
+  controls:   OrbitControls;
+  sun:        THREE.Vector3;
+  water:      Water;
+  sky:        Sky;
+  dirLight:   THREE.DirectionalLight;
   parameters: GUIParameters;
 }
 
-let cameraPosition = ref<CameraPos>({
+const cameraPosition = ref<CameraPos>({
   x: 0,
   y: 0,
   z: 0
@@ -54,10 +54,10 @@ const canvas = ref<HTMLElement | null>(null);
 
 let config: ThreeCanvas;
 let dirLightHelper: THREE.DirectionalLightHelper;
-let cameraPositionVisible = ref(false);
+const cameraPositionVisible = ref(false);
 
-let isLoading = ref(true);
-let loadingProgress = ref(0);
+const isLoading = ref(true);
+const loadingProgress = ref(0);
 
 // Setup the LoadingManager
 const manager = new THREE.LoadingManager();
@@ -126,7 +126,7 @@ onMounted(() => {
       parameters
     };
 
-    if ( config.renderer?.domElement && canvas.value ) {
+    if (config.renderer?.domElement && canvas.value) {
       canvas.value.appendChild(config.renderer.domElement);
       animate();
     }
@@ -197,7 +197,7 @@ function initWater(scene: THREE.Scene): Water {
     fog:             scene?.fog !== undefined,
   });
 
-  if ( water && scene ) {
+  if (water && scene) {
     water.rotation.x = -Math.PI / 2;
     scene.add(water);
   }
@@ -223,11 +223,11 @@ function initSky(scene: THREE.Scene): Sky {
 };
 
 function initDirLight(scene: THREE.Scene): THREE.DirectionalLight {
-  const dirLight = new THREE.DirectionalLight( 0xffffff, 5 );
+  const dirLight = new THREE.DirectionalLight(0xffffff, 5);
 
-  dirLight.color.setHSL( 0.1, 1, 0.95 );
-  dirLight.position.set( 294, 302, -255 );
-  dirLight.position.multiplyScalar( 500 );
+  dirLight.color.setHSL(0.1, 1, 0.95);
+  dirLight.position.set(294, 302, -255);
+  dirLight.position.multiplyScalar(500);
   scene.add(dirLight);
 
   dirLight.castShadow = true;
@@ -248,23 +248,23 @@ function initDirLight(scene: THREE.Scene): THREE.DirectionalLight {
   return dirLight;
 }
 
-function animate(): any {
+function animate() {
   requestAnimationFrame(animate);
 
-  if ( config.water ) {
+  if (config.water) {
     config.water.material.uniforms['time'].value += 1.0 / 60.0;
   }
 
-  if ( config.renderer && config.scene && config.camera ) {
+  if (config.renderer && config.scene && config.camera) {
     config.renderer.render(config.scene, config.camera);
   }
 
-  if ( config.controls ) {
+  if (config.controls) {
     config.controls.update(0.01);
   }
 
 
-  if ( config.camera ) {
+  if (config.camera) {
     cameraPosition.value = {
       x: config.camera.position.x,
       y: config.camera.position.y,
@@ -274,8 +274,8 @@ function animate(): any {
 }
 
 function updateLightHelperVisibility(): void {
-  if ( config.parameters.showDirLightHelper ) {
-    if ( !dirLightHelper ) {
+  if (config.parameters.showDirLightHelper) {
+    if (!dirLightHelper) {
       dirLightHelper = new THREE.DirectionalLightHelper(config.dirLight, 5);
       config.scene.add(dirLightHelper);
     } else {
@@ -284,7 +284,7 @@ function updateLightHelperVisibility(): void {
     }
   } else {
     // Remove the helper from the scene if it exists
-    if ( dirLightHelper ) {
+    if (dirLightHelper) {
       config.scene.remove(dirLightHelper);
     }
   }
@@ -336,7 +336,7 @@ function updateGui(): GUI {
 }
 
 function updateEnvironment(): void {
-  let {
+  const {
     parameters, sun, sky, water, dirLight
   } = config;
 
@@ -373,13 +373,21 @@ function updateEnvironment(): void {
 </script>
 
 <template>
-  <div v-if="isLoading" id="loading-screen">
+  <div
+    v-if="isLoading"
+    id="loading-screen"
+  >
     <div>
-      <p class="loading-text">Loading...</p>
+      <p class="loading-text">
+        Loading...
+      </p>
       <span class="loading-text">{{ loadingProgress.toFixed(0) }}%</span>
     </div>
     <div class="progress-bar-container">
-      <div class="progress-bar" :style="{ width: loadingProgress + '%' }"></div>
+      <div
+        class="progress-bar"
+        :style="{ width: loadingProgress + '%' }"
+      ></div>
     </div>
   </div>
   <div ref="canvas">
@@ -393,7 +401,7 @@ function updateEnvironment(): void {
   </div>
 </template>
 
-<style scoped >
+<style scoped>
 #loading-screen {
   position: fixed;
   top: 0;
