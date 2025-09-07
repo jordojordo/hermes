@@ -145,7 +145,10 @@ function initScene(gltf: GLTF): THREE.Scene {
   const scene = new THREE.Scene();
 
   scene.add(gltf.scene);
-  scene.children[0].position.y = 55;
+
+  if (scene.children[0]) {
+    scene.children[0].position.y = 55;
+  }
 
   return scene;
 }
@@ -214,10 +217,18 @@ function initSky(scene: THREE.Scene): Sky {
 
   const skyUniforms = sky.material.uniforms;
 
-  skyUniforms['turbidity'].value = 10;
-  skyUniforms['rayleigh'].value = 2;
-  skyUniforms['mieCoefficient'].value = 0.005;
-  skyUniforms['mieDirectionalG'].value = 0.8;
+  const uniformValues = {
+    turbidity:       10,
+    rayleigh:        2,
+    mieCoefficient:  0.005,
+    mieDirectionalG: 0.8
+  };
+
+  Object.entries(uniformValues).forEach(([key, value]) => {
+    if (skyUniforms[key]) {
+      skyUniforms[key].value = value;
+    }
+  });
 
   return sky;
 };
@@ -251,7 +262,7 @@ function initDirLight(scene: THREE.Scene): THREE.DirectionalLight {
 function animate() {
   requestAnimationFrame(animate);
 
-  if (config.water) {
+  if (config.water && config.water.material?.uniforms['time']?.value) {
     config.water.material.uniforms['time'].value += 1.0 / 60.0;
   }
 
@@ -320,7 +331,10 @@ function updateGui(): GUI {
   const waterFolder = gui.addFolder('Water');
 
   waterFolder.addColor(parameters, 'waterColor').onChange(updateEnvironment);
-  waterFolder.add(water.material.uniforms.distortionScale, 'value', 0, 8, 0.1).name('distortionScale');
+
+  if (water.material.uniforms.distortionScale?.value !== undefined) {
+    waterFolder.add(water.material.uniforms.distortionScale, 'value', 0, 8, 0.1).name('distortionScale');
+  }
 
   // Directional Light Folder
   const dirLightFolder = gui.addFolder('Directional Light');
@@ -346,23 +360,38 @@ function updateEnvironment(): void {
 
   sun.setFromSphericalCoords(1, phi, theta);
 
+  const skyUniformValues = {
+    turbidity:       parameters.turbidity,
+    rayleigh:        parameters.rayleigh,
+    mieCoefficient:  parameters.mieCoefficient,
+    mieDirectionalG: parameters.mieDirectionalG,
+  };
+
   // Update sky properties
-  sky.material.uniforms['turbidity'].value = parameters.turbidity;
-  sky.material.uniforms['rayleigh'].value = parameters.rayleigh;
-  sky.material.uniforms['mieCoefficient'].value = parameters.mieCoefficient;
-  sky.material.uniforms['mieDirectionalG'].value = parameters.mieDirectionalG;
-  sky.material.uniforms['sunPosition'].value.copy(sun);
+  Object.entries(skyUniformValues).forEach(([key, value]) => {
+    if (sky.material.uniforms[key]) {
+      sky.material.uniforms[key].value = value;
+    }
+  });
+
+  if (sky.material.uniforms['sunPosition']?.value) {
+    sky.material.uniforms['sunPosition'].value.copy(sun);
+  }
 
   // Update water color
   // Convert color from GUI (hex string) to numerical format expected by Three.js
   const waterColor = new THREE.Color(parameters.waterColor);
 
-  water.material.uniforms['waterColor'].value = waterColor;
+  if (water.material.uniforms['waterColor']?.value) {
+    water.material.uniforms['waterColor'].value = waterColor;
+  }
 
-  // Update sun intensity (affects how bright the sun is)
-  water.material.uniforms['sunDirection'].value.copy(sun).normalize();
+  if (water.material.uniforms['sunDirection']?.value) {
+    // Update sun intensity (affects how bright the sun is)
+    water.material.uniforms['sunDirection'].value.copy(sun).normalize();
+  }
+  
   // Assuming 'sunIntensity' affects both the light intensity and how it reflects off the water surface
-
   // Update directional light properties
   const dirLightColor = new THREE.Color(parameters.dirLightColor);
 
