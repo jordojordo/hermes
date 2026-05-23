@@ -66,7 +66,7 @@ manager.onStart = function(url, itemsLoaded, itemsTotal) {
   console.log('Started loading:', url, `. Loaded ${ itemsLoaded } of ${ itemsTotal }.`);
 };
 
-manager.onProgress = function(url, itemsLoaded, itemsTotal) {
+manager.onProgress = function(_url, itemsLoaded, itemsTotal) {
   // Calculate the progress as a percentage
   const progress = (itemsLoaded / itemsTotal) * 100;
 
